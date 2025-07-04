@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice</title>
+    <style>
+        body { font-family: DejaVu Sans, sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+        h2 { text-align: center; }
+    </style>
+</head>
+<body>
+    <h2>Invoice - Order #{{ order.id }}</h2>
+    <p><strong>Date:</strong> {{ order.created_at }}</p>
+    <p><strong>Customer:</strong> {{ order.user.get_full_name }} ({{ order.user.email }})</p>
+    <p><strong>Shipping Address:</strong><br>
+        {{ order.shipping_address.address }},
+        {{ order.shipping_address.city }},
+        {{ order.shipping_address.state }} -
+        {{ order.shipping_address.postal_code }}
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th><th>Qty</th><th>Price</th><th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.items.all %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.price }}</td>
+                <td>₹{{ item.get_total_price }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="3"><strong>Total</strong></td>
+                <td><strong>₹{{ order.get_total_cost }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

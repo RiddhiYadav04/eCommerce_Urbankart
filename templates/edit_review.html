@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">Edit Review for "{{ product.name }}"</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Rating</label>
+            <div class="star-rating">
+                {% for i in "12345"|make_list %}
+                    <i class="fas fa-star star-select {% if form.initial.rating|default:0|add:"0" >= i %}selected{% endif %}" data-value="{{ i }}"></i>
+                {% endfor %}
+                    <input type="hidden" name="rating" id="ratingInput" value="{{ form.initial.rating|default:"" }}">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="comment" class="form-label">Comment</label>
+            <textarea name="comment" id="comment" rows="3" class="form-control" required>{{ form.initial.comment }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">Update Review</button>
+        <a href="{% url 'product_detail' product.slug %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const stars = document.querySelectorAll('.star-rating .star-select');
+    const ratingInput = document.getElementById('ratingInput');
+
+    // Apply existing rating
+    if (ratingInput && ratingInput.value) {
+        stars.forEach(star => {
+            if (parseInt(star.dataset.value) <= parseInt(ratingInput.value)) {
+                star.classList.add('selected');
+            }
+        });
+    }
+
+    stars.forEach(star => {
+        star.addEventListener('click', function () {
+            const rating = this.dataset.value;
+            ratingInput.value = rating;
+
+            stars.forEach(s => {
+                s.classList.toggle('selected', parseInt(s.dataset.value) <= rating);
+            });
+
+            // Bounce animation on click
+            star.classList.add('clicked');
+            setTimeout(() => star.classList.remove('clicked'), 300);
+        });
+    });
+});
+</script>
+{% endblock %}

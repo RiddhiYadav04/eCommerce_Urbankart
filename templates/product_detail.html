@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Product Images -->
+        <div class="col-md-6">
+            {% if product.images.all %}
+                <div class="mb-3">
+                    <img id="mainImage" src="{{ product.images.first.image.url }}" class="img-fluid border" alt="{{ product.name }}">
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for image in product.images.all %}
+                        <img src="{{ image.image.url }}" class="img-thumbnail thumbnail-image" onclick="updateMainImage(this)">
+                    {% endfor %}
+                </div>
+            {% else %}
+                <img src="{% static 'images/default-product.png' %}" class="img-fluid" alt="No Image">
+            {% endif %}
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-6">
+            <h2>{{ product.name }}</h2>
+            <p>{{ product.description }}</p>
+            <h4>
+                {% if product.is_on_sale and product.discount_price %}
+                    <span class="text-danger">₹{{ product.discount_price }}</span>
+                    <span class="text-muted text-decoration-line-through">₹{{ product.price }}</span>
+                {% else %}
+                    <span>₹{{ product.price }}</span>
+                {% endif %}
+            </h4>
+            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary mt-3">Add to Cart</a>
+            <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-primary mt-3">Wishlist</a>
+        </div>
+
+        <!-- Customer Reviews -->
+        <div class="container mt-5">
+            <h4 class="mb-3">Customer Reviews</h4>
+
+            {% if reviews %}
+                {% for review in reviews %}
+                    <div class="review-box p-3 mb-3 bg-white rounded shadow-sm position-relative">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>{{ review.user.username }}</strong>
+                                <div class="text-warning">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <p class="mb-1">{{ review.comment }}</p>
+                                <small class="text-muted">{{ review.created_at|date:"F j, Y" }}</small>
+                            </div>
+                            {% if request.user == review.user %}
+                                <div class="review-actions">
+                                    <a href="{% url 'edit_review' review.id %}" class="text-primary me-2" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'delete_review' review.id %}" class="text-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this review?');">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No reviews yet.</p>
+            {% endif %}
+
+            {% if can_review and not user_review %}
+                <div class="card p-3 mt-4 shadow-sm">
+                    <h5 class="mb-3">Write a Review</h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Rating</label>
+                            <div class="star-rating">
+                                {% for i in "12345"|make_list %}
+                                    <i class="fas fa-star star-select {% if form.initial.rating|default:0|add:"0" >= i %}selected{% endif %}" data-value="{{ i }}"></i>
+                                {% endfor %}
+                                <input type="hidden" name="rating" id="ratingInput" value="{{ form.initial.rating|default:"" }}">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Comment</label>
+                            <textarea name="comment" id="comment" rows="3" class="form-control" required>{{ form.initial.comment }}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                    </form>
+                </div>
+            {% elif user_review %}
+                <div class="alert alert-success mt-3">
+                    You already reviewed this product.
+                </div>
+            {% elif not can_review %}
+                <div class="alert alert-warning mt-3">
+                    You can only write a review after this product is delivered to you.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function updateMainImage(imgElement) {
+    const mainImage = document.getElementById('mainImage');
+    mainImage.src = imgElement.src;
+
+    document.querySelectorAll('.thumbnail-image').forEach(img => img.classList.remove('active-thumb'));
+    imgElement.classList.add('active-thumb');
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const stars = document.querySelectorAll('.star-rating .star-select');
+    const ratingInput = document.getElementById('ratingInput');
+
+    // Apply existing rating
+    if (ratingInput && ratingInput.value) {
+        stars.forEach(star => {
+            if (parseInt(star.dataset.value) <= parseInt(ratingInput.value)) {
+                star.classList.add('selected');
+            }
+        });
+    }
+
+    stars.forEach(star => {
+        star.addEventListener('click', function () {
+            const rating = this.dataset.value;
+            ratingInput.value = rating;
+
+            stars.forEach(s => {
+                s.classList.toggle('selected', parseInt(s.dataset.value) <= rating);
+            });
+
+            star.classList.add('clicked');
+            setTimeout(() => star.classList.remove('clicked'), 300);
+        });
+    });
+});
+</script>
+{% endblock %}

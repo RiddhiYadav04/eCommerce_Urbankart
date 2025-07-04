@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">My Orders</h2>
+
+    {% if orders %}
+    {% for order in orders %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header d-flex justify-content-between">
+            <strong>Order #{{ order.id }}</strong>
+            <span class="text-muted">Placed on {{ order.created_at|date:"M d, Y H:i" }}</span>
+        </div>
+        <div class="card-body">
+            <p>
+                <strong>Shipping Status:</strong>
+                {% if order.shipping_status == "Delivered" %}
+                    <span class="badge bg-success">{{ order.shipping_status }}</span>
+                {% elif order.shipping_status == "Out for Delivery" %}
+                    <span class="badge bg-warning text-dark">{{ order.shipping_status }}</span>
+                {% elif order.shipping_status == "Cancelled" %}
+                    <span class="badge bg-danger">{{ order.shipping_status }}</span>
+                {% else %}
+                    <span class="badge bg-primary">{{ order.shipping_status }}</span>
+                {% endif %}
+            </p>
+            <p><strong>Paid:</strong> {{ order.is_paid|yesno:"Yes,No" }}</p>
+            <p><strong>Shipping To:</strong> {{ order.shipping_address.address }}, {{ order.shipping_address.city }}, {{ order.shipping_address.state }} - {{ order.shipping_address.postal_code }} ({{ order.shipping_address.phone }})</p>
+
+            <hr>
+            {% for item in order.items.all %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <strong>{{ item.product.name }}</strong>
+                        <small class="text-muted">×{{ item.quantity }}</small>
+                    </div>
+                    <div>
+                        ₹{{ item.get_total_price }}
+                    </div>
+                </div>
+            {% endfor %}
+            <hr>
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'download_invoice' order.id %}" class="btn btn-primary mt-3">
+                    Download Invoice (PDF)
+                </a>
+                <div class="text-end fw-bold mt-3">
+                    Total: ₹{{ order.get_total_cost }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+        <p>You haven't placed any orders yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

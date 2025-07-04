@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Your Cart</h2>
+
+    {% if cart_items %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle" id="cartTable">
+            <thead class="table-light text-center">
+                <tr>
+                    <th>Product</th>
+                    <th>Details</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr class="text-center" data-item-id="{{ item.id }}">
+                    <td style="width: 120px;">
+                        {% if item.product.images.first %}
+                            <img src="{{ item.product.images.first.image.url }}" class="img-fluid rounded shadow-sm" style="height: 75px;">
+                        {% else %}
+                            <img src="{% static 'images/default-product.png' %}" class="img-fluid rounded shadow-sm" style="height: 75px;">
+                        {% endif %}
+                    </td>
+                    <td class="text-start">
+                        <strong>{{ item.product.name }}</strong><br>
+                        <small>{{ item.product.description|truncatechars:70 }}</small>
+                    </td>
+                    <td style="width: 100px;">
+                        <input type="number" class="form-control text-center qty-input" value="{{ item.quantity }}" min="1">
+                    </td>
+                    <td>₹<span class="price">{{ item.product.get_display_price }}</span></td>
+                    <td>₹<span class="item-total">{{ item.get_total_price }}</span></td>
+                    <td>
+                        <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-sm btn-outline-danger">
+                            Remove
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col text-end">
+            <h4>Total: ₹<span id="cartTotal">{{ total_price }}</span></h4>
+            <a href="{% url 'checkout' %}" class="btn btn-success btn-lg mt-2">Proceed to Checkout</a>
+        </div>
+    </div>
+
+    {% else %}
+        <p class="text-center">Your cart is empty. <a href="{% url 'home' %}">Continue shopping</a>.</p>
+    {% endif %}
+</div>
+
+<!-- AJAX Script to Auto Update Cart -->
+<script>
+    document.querySelectorAll('.qty-input').forEach(input => {
+        input.addEventListener('change', function () {
+            const row = this.closest('tr');
+            const itemId = row.getAttribute('data-item-id');
+            const newQty = this.value;
+
+            fetch("{% url 'update_cart_item' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ id: itemId, quantity: newQty })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update item total and cart total
+                row.querySelector('.item-total').textContent = data.item_total;
+                document.getElementById('cartTotal').textContent = data.cart_total;
+            });
+        });
+    });
+</script>
+{% endblock %}
