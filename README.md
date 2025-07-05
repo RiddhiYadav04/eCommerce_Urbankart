@@ -1,28 +1,24 @@
-# eCommerce_Urbankart
-# UrbanKart – Django eCommerce Website
-
-UrbanKart is a fully-featured, modern eCommerce web application built using Django. It supports end-to-end shopping functionality including product browsing, cart management, secure payments, user authentication, order tracking, reviews, and admin dashboards.
+# UrbanKart – Django-Based E-Commerce Platform
+UrbanKart is a fully functional, scalable e-commerce platform built with Django and Bootstrap. Designed with clean UI/UX and robust backend architecture, it supports real-time cart management, secure payments, order tracking, user reviews, and an intuitive admin dashboard.
 
 # Features
-
 - User Authentication & Profile Management
-- Product Listings with Categories & Search
-- Shopping Cart & Wishlist
-- Razorpay Payment Integration
-- Order Placement & Management
-- Shipping Status Tracking
-- Email & SMS Notifications
-- Product Reviews (only for delivered orders)
-- PDF Invoice Generation
-- Admin Dashboard for Products, Orders & Users
-- Search & SEO-ready Pages
-- Fully Responsive UI (HTML, CSS, JS, Bootstrap)
-- About Us and Contact Us Pages
+- Product Browsing with categories, filtering, and search
+- Persistent Cart & Wishlist (session + database)
+- Secure Checkout with Razorpay payment integration
+- Order Placement & Real-Time Shipment Tracking
+- Auto-Generated PDF Invoice
+- Email & SMS Notifications (Post-order updates)
+- Review & Rating System (For verified orders only)
+- Admin Dashboard for product, order, and shipping control
+- Fully Responsive UI using Bootstrap 5
+- About Us & Contact Us
 
 # Tech Stack
-
-- **Backend:** Python, Django
-- **Frontend:** HTML5, CSS3, JavaScript, Bootstrap
-- **Database:** SQLite (or PostgreSQL/MySQL)
-- **Payment Gateway:** Razorpay
-- **Notifications:** Twilio (SMS), SMTP (Email)
+**Category** - Technologies
+**Frontend** - HTML, CSS, JavaScript, Bootstrap
+**Backend** - Python, Django
+**Database** - SQLite (Dev) / PostgreSQL (Prod)
+**Payment** - Razorpay
+**Notifications** - SMTP (Email), Twilio / Fast2SMS (SMS)
+**PDF** - xhtml2pdf

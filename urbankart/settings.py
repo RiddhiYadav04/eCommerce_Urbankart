@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%_q-h0@w^-ekn=9-(p$r9c)exu^c9v@@#mroofum&=@2vp8lns'
+SECRET_KEY = 'YOUR_SECRET_KEY'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -143,15 +143,13 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Forget or Reset Password
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'your_email@gmail.com'
-
 # Razorpay
 RAZORPAY_KEY_ID = 'RAZORPAY_KEY_ID'
 RAZORPAY_KEY_SECRET = 'RAZORPAY_KEY_SECRET'
 
+# Forget or Reset Password
 # Email + SMS Notifications After Order
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # or use your provider
 EMAIL_PORT = 587
