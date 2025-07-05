@@ -15,10 +15,9 @@ UrbanKart is a fully functional, scalable e-commerce platform built with Django 
 - About Us & Contact Us
 
 # Tech Stack
-**Category** - Technologies
 **Frontend** - HTML, CSS, JavaScript, Bootstrap
 **Backend** - Python, Django
-**Database** - SQLite (Dev) / PostgreSQL (Prod)
+**Database** - SQLite / PostgreSQL
 **Payment** - Razorpay
-**Notifications** - SMTP (Email), Twilio / Fast2SMS (SMS)
+**Notifications** - SMTP (Email), Twilio
 **PDF** - xhtml2pdf
